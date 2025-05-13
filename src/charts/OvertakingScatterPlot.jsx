@@ -1,14 +1,15 @@
-// components/charts/OvertakingScatterPlot.jsx
-import { useRef, useEffect } from 'react';
+import React, { useRef, useEffect } from 'react';
 import * as d3 from 'd3';
 
 export default function ScatterPlot({ data, width, height }) {
   const svgRef = useRef();
 
   useEffect(() => {
-    if (!data) return;
+    if (!data.length) return;
 
-    // D3 for scales and calculations
+    const svg = d3.select(svgRef.current);
+
+    // Scales
     const xScale = d3.scaleLinear()
       .domain([1, 20]) // Grid positions
       .range([0, width]);
@@ -17,14 +18,15 @@ export default function ScatterPlot({ data, width, height }) {
       .domain([1, 20]) // Finish positions
       .range([height, 0]);
 
-    // React handles rendering
-    const svg = d3.select(svgRef.current);
+    // Draw circles
     svg.selectAll('circle')
       .data(data)
       .join('circle')
       .attr('cx', d => xScale(d.grid))
       .attr('cy', d => yScale(d.positionOrder))
-      .attr('r', 5);
+      .attr('r', 5)
+      .attr('fill', '#ff5722');
+
   }, [data, width, height]);
 
   return <svg ref={svgRef} width={width} height={height} />;
