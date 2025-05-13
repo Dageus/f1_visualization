@@ -5,20 +5,22 @@ export default function ScatterPlot({ data, width, height }) {
   const svgRef = useRef();
 
   useEffect(() => {
-    if (!data.length) return;
+    if (!data || data.length === 0) return;
 
     const svg = d3.select(svgRef.current);
 
-    // Scales
+    // Clear previous renders
+    svg.selectAll('*').remove();
+
+    // Add your D3 visualization code here
     const xScale = d3.scaleLinear()
-      .domain([1, 20]) // Grid positions
+      .domain([1, 20])
       .range([0, width]);
 
     const yScale = d3.scaleLinear()
-      .domain([1, 20]) // Finish positions
+      .domain([1, 20])
       .range([height, 0]);
 
-    // Draw circles
     svg.selectAll('circle')
       .data(data)
       .join('circle')
