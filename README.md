@@ -2,7 +2,7 @@
 
 ## To run the demonstration, run:
 
-`npm run start`
+### `npm run start`
 
 Inside the root directory of the project.
 
