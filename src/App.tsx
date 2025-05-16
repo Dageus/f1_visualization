@@ -1,33 +1,35 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
+import { useEffect, useState } from 'react';
 import './App.css'
+import * as d3 from 'd3'
+
+import ScatterPlot from './components/charts/OvertakingScatterPlot.tsx';
 
 function App() {
-  const [count, setCount] = useState(0)
+
+  const [data, setData] = useState([])
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    d3.csv("/data/f1_visualization.csv").then((d) => {
+      setData(d)
+
+      setLoading(false);
+    });
+    // or
+    // d3.json("").then((d) => {
+    //   setData(d)
+    //
+    //   setLoading(false);
+    // });
+
+    return () => undefined;
+  }, [])
 
   return (
     <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
+      <h1>F1 Visualization</h1>
+      {loading && <div>loading</div>}
+      {!loading && <ScatterPlot width={500} height={500} data={data} />}
     </>
   )
 }
