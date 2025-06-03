@@ -29,8 +29,8 @@ class Slopegraph {
     }));
   }
 
-  update(year) {
-    if (year) {
+  update(params) {
+    if (params) {
       this.currentYear = params.year;
       this.container = d3.select(this.containerID)
       this.element = document.querySelector(this.containerID)
@@ -38,7 +38,7 @@ class Slopegraph {
       const chart_height = this.element.getBoundingClientRect().height;
 
       this.currentYear = params.year;
-      this.drawChart(chart_width, chart_height, year);
+      this.drawChart(chart_width, chart_height);
     }
   }
 
@@ -74,7 +74,7 @@ class Slopegraph {
   }
 
   drawChart(chart_width, chart_height) {
-    const { year, constructorMonthlyPoints, allConstructors } = this.filterData(this.currentYear);
+    const { year, constructorMonthlyPoints, allConstructors } = this.filterData(parseInt(this.currentYear));
     console.log("[SLOPEGRAPH] Data for year:", year)
 
     this.activeConstructors = allConstructors
@@ -217,13 +217,13 @@ class Slopegraph {
     return months[monthNumber - 1]; // -1 because months are 1-12
   }
 
-  filterData(year = 2024) {
+  filterData(year) {
     // represents each month of the year
     const months = Array.from({ length: 12 }, (_, i) => i + 1);
 
     const yearData = this.data.filter(d =>
       // might be null, you never know when you're using javascript
-      d.raceDate.getFullYear() === 2024
+      d.raceDate.getFullYear() === year
     );
 
     const constructorMonthlyPoints = new Map();

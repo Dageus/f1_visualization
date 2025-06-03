@@ -28,6 +28,21 @@
 			font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 		}
 
+		.box {
+			opacity: 0.8;
+			transition: opacity 0.2s;
+		}
+
+		.box:hover {
+			opacity: 1;
+			stroke-width: 2px;
+		}
+
+		.axis-x text {
+			font-size: 10px;
+		}
+
+
 		.dashboard-header {
 			background-color: var(--f1-dark);
 			color: white;
@@ -86,27 +101,6 @@
 			margin-bottom: 1.5rem;
 		}
 
-		.toggle-btn {
-			background-color: var(--f1-dark);
-			color: white;
-			border: none;
-			border-radius: 20px;
-			padding: 0.5rem 1.25rem;
-			margin: 0.25rem;
-			font-size: 0.9rem;
-			transition: all 0.3s ease;
-		}
-
-		.toggle-btn:hover {
-			background-color: var(--f1-red);
-			transform: translateY(-2px);
-		}
-
-		.toggle-btn.active {
-			background-color: var(--f1-red);
-			box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
-		}
-
 		.tooltip {
 			position: fixed;
 			background: rgba(255, 255, 255, 0.98);
@@ -116,12 +110,12 @@
 			pointer-events: none;
 			font-size: 13px;
 			box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-			z-index: 1000;
+			z-index: 1000 !important;
 			opacity: 0;
 			transition: opacity 0.2s ease;
 			max-width: 300px;
 			backdrop-filter: blur(2px);
-			transform: translate(-100%, -100%);
+			transform: translate(-130%, -100%);
 			pointer-events: none;
 		}
 
@@ -206,18 +200,23 @@
 			border-radius: 3px;
 		}
 
-		/* Axis inversion button */
-		.axis-toggle {
-			background: none;
-			border: none;
-			color: white;
-			cursor: pointer;
-			font-size: 0.9rem;
-			margin-left: 10px;
+		.axis-x text {
+			font-size: 10px;
 		}
 
-		.axis-toggle:hover {
-			text-decoration: underline;
+		.plot-area {
+			height: 450px;
+			margin-bottom: 40px;
+		}
+
+		#refresh-slope {
+			border-color: var(--f1-red);
+			color: var(--f1-red);
+		}
+
+		#refresh-slope:hover {
+			background-color: var(--f1-red);
+			color: white;
 		}
 	</style>
 </head>
@@ -248,15 +247,22 @@
 				<span><i class="fas fa-users me-2"></i>Constructor Performance Over Time</span>
 			</div>
 			<div class="row">
+				<div class="col-md-3">
+					<div class="p-3">
+						<label class="form-label"><i class="fas fa-calendar me-2"></i>Season</label>
+						<div class="input-group mb-3">
+							<select class="form-select" id="slopegraph-year">
+								<option value="2024">2024 (Current)</option>
+							</select>
+							<button class="btn btn-outline-secondary" type="button" id="refresh-slope">
+								<i class="fas fa-sync-alt"></i>
+							</button>
+						</div>
+					</div>
+					<div id="slopegraph-legend" class="p-3"></div>
+				</div>
 				<div class="col-md-9">
 					<div id="slopegraph" class="plot-area"></div>
-					<div class="tooltip" id="sg-tooltip" role="tooltip"></div>
-				</div>
-				<div class="col-md-3">
-					<div id="slopegraph-legend" class="p-3"></div>
-					<select class="form-select" id="slopegraph-year">
-						<option value="2024">2024 (Current)</option>
-					</select>
 				</div>
 			</div>
 		</div>
@@ -266,15 +272,10 @@
 			<div class="card-header">
 				<div>
 					<i class="fas fa-calendar-alt me-2"></i>Seasonal Performance Trends
-					<button class="axis-toggle" id="invert-axis-btn">
-						<i class="fas fa-exchange-alt me-1"></i>Invert Axis
-					</button>
 				</div>
 			</div>
-			<div class="row">
-				<div id="boxplot" class="plot-area"></div>
-				<div class="tooltip" id="bp-tooltip" role="tooltip"></div>
-			</div>
+			<div id="boxplot" class="plot-area"></div>
+			<div class="tooltip" id="bp-tooltip" role="tooltip"></div>
 		</div>
 	</div>
 
@@ -320,7 +321,7 @@
 				}
 
 				// Add years from 1950 to current year
-				for (let year = currentYear - 1; year >= 1950; year--) {
+				for (let year = currentYear - 2; year >= 1950; year--) {
 					const option = document.createElement('option');
 					option.value = year;
 					option.textContent = year;
@@ -379,18 +380,20 @@
 
 		// Setup all event listeners
 		function setupEventListeners() {
-			// Axis inversion button
-			document.getElementById('invert-axis-btn').addEventListener('click', function () {
-				if (boxplot) {
-					boxplot.toggleAxis();
+			document.getElementById('refresh-slope').addEventListener('click', function () {
+				const yearSelect = document.getElementById('slopegraph-year');
+				if (slopegraph) {
+					slopegraph.update({year: yearSelect.value});
+					updateSlopegraphLegend();
 				}
 			});
 
-			// Slopegraph year selection
 			document.getElementById('slopegraph-year').addEventListener('change', function () {
 				if (slopegraph) {
+					console.log("updating Sloegraph...")
 					slopegraph.update({year: this.value});
 					updateSlopegraphLegend();
+					console.log("new year filter:", this.value)
 				}
 			});
 		}

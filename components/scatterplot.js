@@ -153,7 +153,6 @@ class Scatterplot {
       .style("text-anchor", "middle")
       .text("Number of Races");
 
-    // Tooltip setup
     const tooltip = d3.select(this.tooltipID)
       .style("position", "absolute")
       .style("opacity", 0);
